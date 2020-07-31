@@ -1,0 +1,1 @@
+# Kincore-standalone-laptop
