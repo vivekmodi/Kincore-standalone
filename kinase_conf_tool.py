@@ -23,7 +23,7 @@ def identify_state(pwd,pdbfilename):
     
     for model in structure:
         for chain in model:
-            if len(chain.get_list())<=25:
+            if len(chain.get_list())<=30:
                 continue
             chain_list.append(chain.id)
             first_res=extract_seq(pwd,pdbfilename,model.id,chain.id)
