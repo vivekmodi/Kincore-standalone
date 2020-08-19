@@ -148,7 +148,7 @@ def compute_chi4(structure_,model_,chain_,curr_residue_):
 
     return chi4
 
-def compute_dihedrals(pwd,pdbfilename,index,conf_df):
+def compute_dihedrals(pdbfilename,index,conf_df):
         
         ignoremodified=('PTR','TPO','SEP','MSE','BWB','CAS','CME','CSO','CSS','CSX','MK8','MLY','NEP','NMM','PHD','CAF','CSD','CYO','OCS','OCY','SCS',\
                         'ALY','KCX',',LGY','CXM','MHO','T8L','ACE','AME','CY0','UNK','T8L','MHO','COM')
@@ -159,7 +159,7 @@ def compute_dihedrals(pwd,pdbfilename,index,conf_df):
             parser=PDB.PDBParser(QUIET=True)
         if '.cif' in pdbfilename.lower():
             parser=PDB.MMCIFParser(QUIET=True)
-        structure=parser.get_structure("PDB",(f'{pwd}/{pdbfilename}'))
+        structure=parser.get_structure("PDB",(f'{pdbfilename}'))
        
         for model in structure:
             for chain in model:
@@ -183,8 +183,8 @@ def compute_dihedrals(pwd,pdbfilename,index,conf_df):
                             psi=compute_psi(structure,model,chain,prev_residue,curr_residue)
                             chi1=compute_chi1(structure,model,chain,prev_residue)
                             chi2=compute_chi2(structure,model,chain,prev_residue)
-                            chi3=compute_chi3(structure,model,chain,prev_residue)       #right now works only for ARG, GLN, GLU, LYS and MET
-                            chi4=compute_chi4(structure,model,chain,prev_residue)       #right now works only for ARG, LYS
+                            chi3=compute_chi3(structure,model,chain,prev_residue)       
+                            chi4=compute_chi4(structure,model,chain,prev_residue)       
         
                             first=3
                             continue
@@ -196,8 +196,8 @@ def compute_dihedrals(pwd,pdbfilename,index,conf_df):
                             omega=compute_omega(structure,model,chain,prev_residue,curr_residue)
                             chi1=compute_chi1(structure,model,chain,curr_residue)
                             chi2=compute_chi2(structure,model,chain,curr_residue)
-                            chi3=compute_chi3(structure,model,chain,curr_residue)       #right now works only for ARG, GLN, GLU, LYS and MET
-                            chi4=compute_chi4(structure,model,chain,curr_residue)       #right now works only for ARG, LYS
+                            chi3=compute_chi3(structure,model,chain,curr_residue)      
+                            chi4=compute_chi4(structure,model,chain,curr_residue)       
         
         
                             if curr_residue.id[1]==int(conf_df.at[index,'XDFG_num']-insertion_num):
@@ -218,7 +218,7 @@ def compute_dihedrals(pwd,pdbfilename,index,conf_df):
                         omega=compute_omega(structure,model,chain,prev_residue,curr_residue)
                         chi1=compute_chi1(structure,model,chain,curr_residue)
                         chi2=compute_chi2(structure,model,chain,curr_residue)
-                        chi3=compute_chi3(structure,model,chain,curr_residue)       #right now works only for ARG, GLN, GLU, LYS and MET
-                        chi4=compute_chi4(structure,model,chain,curr_residue)       #right now works only for ARG, LYS
+                        chi3=compute_chi3(structure,model,chain,curr_residue)      
+                        chi4=compute_chi4(structure,model,chain,curr_residue)       
         return conf_df
     
