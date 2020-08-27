@@ -7,7 +7,7 @@ from Bio import PDB
 
 
 def compute_phi(structure_,model_,chain_,prev_residue_,curr_residue_):          #The original variable names can not be assigned again, therefore copies of variables are created here
-    phi=99999.00
+    phi=999.00
     if prev_residue_.has_id('C') and curr_residue_.has_id('N') and curr_residue_.has_id('CA') and curr_residue_.has_id('C') and (curr_residue_.id[1]==(prev_residue_.id[1]+1)):     #The last condition is required to make sure that the residues are consecutive
         prev_c=structure_[model_.id][chain_.id][prev_residue_.id]['C'].get_vector()
         curr_n=structure_[model_.id][chain_.id][curr_residue_.id]['N'].get_vector()
@@ -17,7 +17,7 @@ def compute_phi(structure_,model_,chain_,prev_residue_,curr_residue_):          
     return phi
 
 def compute_psi(structure_,model_,chain_,curr_residue_,next_residue_):
-    psi=99999.00
+    psi=999.00
     if curr_residue_.has_id('N') and curr_residue_.has_id('CA') and curr_residue_.has_id('C') and next_residue_.has_id('N') and (next_residue_.id[1]==(curr_residue_.id[1]+1)):     #The last condition is required to make sure that the residues are consecutive
         curr_n=structure_[model_.id][chain_.id][curr_residue_.id]['N'].get_vector()
         curr_ca=structure_[model_.id][chain_.id][curr_residue_.id]['CA'].get_vector()
@@ -27,7 +27,7 @@ def compute_psi(structure_,model_,chain_,curr_residue_,next_residue_):
     return psi
 
 def compute_omega(structure_,model_,chain_,prev_residue_,curr_residue_):
-    omega=99999.00
+    omega=999.00
     if prev_residue_.has_id('CA') and prev_residue_.has_id('C') and curr_residue_.has_id('N') and curr_residue_.has_id('CA') and (curr_residue_.id[1]==(prev_residue_.id[1]+1)):     #The last condition is required to make sure that the residues are consecutive
         prev_ca=structure_[model_.id][chain_.id][prev_residue_.id]['CA'].get_vector()
         prev_c=structure_[model_.id][chain_.id][prev_residue_.id]['C'].get_vector()
@@ -37,7 +37,7 @@ def compute_omega(structure_,model_,chain_,prev_residue_,curr_residue_):
     return omega
 
 def compute_chi1(structure_,model_,chain_,curr_residue_):
-    chi1=99999.00
+    chi1=999.00
     if curr_residue_.has_id('N') and curr_residue_.has_id('CA') and curr_residue_.has_id('CB'):
         curr_n=structure_[model_.id][chain_.id][curr_residue_.id]['N'].get_vector()
         curr_ca=structure_[model_.id][chain_.id][curr_residue_.id]['CA'].get_vector()
@@ -65,7 +65,7 @@ def compute_chi1(structure_,model_,chain_,curr_residue_):
     return chi1
 
 def compute_chi2(structure_,model_,chain_,curr_residue_):
-    chi2=99999.00
+    chi2=999.00
     if curr_residue_.has_id('CA') and curr_residue_.has_id('CB') and curr_residue_.has_id('CG'):
         curr_ca=structure_[model_.id][chain_.id][curr_residue_.id]['CA'].get_vector()
         curr_cb=structure_[model_.id][chain_.id][curr_residue_.id]['CB'].get_vector()
@@ -100,7 +100,7 @@ def compute_chi2(structure_,model_,chain_,curr_residue_):
     return chi2
 
 def compute_chi3(structure_,model_,chain_,curr_residue_):
-    chi3=99999.00
+    chi3=999.00
     if curr_residue_.has_id('CB') and curr_residue_.has_id('CG') and curr_residue_.has_id('CD'):
         curr_cb=structure_[model_.id][chain_.id][curr_residue_.id]['CB'].get_vector()
         curr_cg=structure_[model_.id][chain_.id][curr_residue_.id]['CG'].get_vector()
@@ -127,7 +127,7 @@ def compute_chi3(structure_,model_,chain_,curr_residue_):
     return chi3
 
 def compute_chi4(structure_,model_,chain_,curr_residue_):
-    chi4=99999.00
+    chi4=999.00
     if curr_residue_.has_id('CG') and curr_residue_.has_id('CD') and curr_residue_.has_id('NE'):
         curr_cg=structure_[model_.id][chain_.id][curr_residue_.id]['CG'].get_vector()
         curr_cd=structure_[model_.id][chain_.id][curr_residue_.id]['CD'].get_vector()
@@ -148,23 +148,23 @@ def compute_chi4(structure_,model_,chain_,curr_residue_):
 
     return chi4
 
-def compute_dihedrals(pdbfilename,index,conf_df):
+def compute_dihedrals(pdbfilename,index,conf_df,structure):
         
         ignoremodified=('PTR','TPO','SEP','MSE','BWB','CAS','CME','CSO','CSS','CSX','MK8','MLY','NEP','NMM','PHD','CAF','CSD','CYO','OCS','OCY','SCS',\
                         'ALY','KCX',',LGY','CXM','MHO','T8L','ACE','AME','CY0','UNK','T8L','MHO','COM')
         
         model_id=conf_df.at[index,'Model_id']
         chain_id=conf_df.at[index,'Chain_id']        
-        if '.pdb' in pdbfilename.lower():
-            parser=PDB.PDBParser(QUIET=True)
-        if '.cif' in pdbfilename.lower():
-            parser=PDB.MMCIFParser(QUIET=True)
-        structure=parser.get_structure("PDB",(f'{pdbfilename}'))
+        #if '.pdb' in pdbfilename.lower():
+        #    parser=PDB.PDBParser(QUIET=True)
+        #if '.cif' in pdbfilename.lower():
+        #    parser=PDB.MMCIFParser(QUIET=True)
+        #structure=parser.get_structure("PDB",(f'{pdbfilename}'))
        
         for model in structure:
             for chain in model:
                 insertion_num=0    #Count residues with insertion codes and skip them
-                if str(model.id)==model_id and chain.id==chain_id:
+                if str(model.id)==str(model_id) and chain.id==chain_id:
                     first=1
                     for residue in chain:
                         if residue.get_id()[0]==' ' and residue.get_id()[2]!=' ':      #Insertion code present

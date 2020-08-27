@@ -8,7 +8,7 @@ Created on Sat Aug  1 08:43:59 2020
 from Bio import SearchIO
 
 def identify_group(pdbfilename,index,conf_df):
-    model_id=conf_df.at[index,'Model_id']
+    model_id=str(conf_df.at[index,'Model_id'])
     chain_id=conf_df.at[index,'Chain_id']
     
     hmm_result_AGC=SearchIO.read(f'{pdbfilename[0:-4]}_{model_id}_{chain_id}_AGC.hmmer.txt',format='hmmer3-text')
