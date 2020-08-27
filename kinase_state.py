@@ -79,7 +79,7 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
                 conf_df=identify_group(pdbfilename,index,conf_df)
                 
                 if conf_df.at[index,'Group']=='None':
-                    print('Chain {chain.id} is probably not a protein kinase.\n')
+                    print(f'Chain {chain.id} is probably not a protein kinase.\n')
                 
                 else:
                     conf_df=identify_residues(pdbfilename,index,conf_df)
