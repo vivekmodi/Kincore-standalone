@@ -55,8 +55,11 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
         conf_df=spatial_label(index,conf_df)
         conf_df=dihedral_label(index,conf_df,0.4)
         conf_df=chelix_conformation(index,conf_df)
-        print('Input\tModel\tChain\tB3-Lys\tC-helix-Glu\tDFG-Phe\tSpatial_label\tDihedral_label\tC-helix_label')
-        print(f"{pdbfilename}\t{conf_df.at[index,'Model_id']}\t{conf_df.at[index,'Chain_id']}\t{int(conf_df.at[index,'Lys_num'])}\t{int(conf_df.at[index,'Glu_num'])}\t{int(conf_df.at[index,'Phe_num'])}\t{conf_df.at[index,'Spatial_label']}\t{conf_df.at[index,'Dihedral_label']}\t{conf_df.at[index,'Chelix']}")
+        print('Input'.rjust(13)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
+                                  'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14))
+        print(pdbfilename.rjust(13)+conf_df.at[index,'Model_id'].rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
+                              str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
+                              conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14))
     
     elif align.upper()=='TRUE':                
         index=-1
@@ -79,7 +82,7 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
                 conf_df=identify_group(pdbfilename,index,conf_df)
                 
                 if conf_df.at[index,'Group']=='None':
-                    print(f'Chain {chain.id} is probably not a protein kinase.\n')
+                    print(f'Model {model.id}, Chain {chain.id} is probably not a protein kinase.\n')
                 
                 else:
                     conf_df=identify_residues(pdbfilename,index,conf_df)
@@ -103,8 +106,11 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
                         conf_df=chelix_conformation(index,conf_df)
                         
                         if len(chain_list)==1:
-                            print('Input\tGroup\tModel\tChain\tB3-Lys\tC-helix-Glu\tDFG-Phe\tSpatial_label\tDihedral_label\tC-helix_label')
-                        print(f"{pdbfilename}\t{conf_df.at[index,'Group']}\t{conf_df.at[index,'Model_id']}\t{conf_df.at[index,'Chain_id']}\t{int(conf_df.at[index,'Lys_num'])}\t{int(conf_df.at[index,'Glu_num'])}\t{int(conf_df.at[index,'Phe_num'])}\t{conf_df.at[index,'Spatial_label']}\t{conf_df.at[index,'Dihedral_label']}\t{conf_df.at[index,'Chelix']}")
+                            print('Input'.rjust(13)+'Group'.rjust(6)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
+                                  'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14))
+                        print(pdbfilename.rjust(13)+conf_df.at[index,'Group'].rjust(6)+conf_df.at[index,'Model_id'].rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
+                              str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
+                              conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14))
                         delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
                         
     
