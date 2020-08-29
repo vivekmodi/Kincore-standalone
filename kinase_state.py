@@ -53,7 +53,7 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
         conf_df=compute_dihedrals(pdbfilename,index,conf_df,structure)
         conf_df=chelix_conformation(index,conf_df)
         conf_df=spatial_label(index,conf_df)
-        conf_df=dihedral_label(index,conf_df,0.4)
+        conf_df=dihedral_label(index,conf_df,0.45)
         conf_df=chelix_conformation(index,conf_df)
         print('Input'.rjust(13)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
                                   'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14))
@@ -102,7 +102,7 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
                         conf_df=compute_dihedrals(pdbfilename,index,conf_df,structure)
                         conf_df=chelix_conformation(index,conf_df)
                         conf_df=spatial_label(index,conf_df)
-                        conf_df=dihedral_label(index,conf_df,0.4)
+                        conf_df=dihedral_label(index,conf_df,0.45)
                         conf_df=chelix_conformation(index,conf_df)
                         
                         if len(chain_list)==1:
