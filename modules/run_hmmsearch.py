@@ -25,5 +25,8 @@ def run_hmmsearch(pwd,pdbfilename,index,conf_df):
          hmmsearch -o {pdbfilename[0:-4]}_{model_id}_{chain_id}_BUB.hmmer.txt {pwd}/BUB.hmm {pdbfilename[0:-4]}_{model_id}_{chain_id}.fasta;\
          hmmsearch -o {pdbfilename[0:-4]}_{model_id}_{chain_id}_ULK.hmmer.txt {pwd}/ULK.hmm {pdbfilename[0:-4]}_{model_id}_{chain_id}.fasta;')
     
-    subprocess.call(cmd,shell=True)
+    process=subprocess.Popen(cmd,shell=True)
+    process.communicate()
+    process.wait()
+    #subprocess.call(cmd,shell=True)
     return

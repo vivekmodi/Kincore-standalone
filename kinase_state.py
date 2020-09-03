@@ -54,7 +54,6 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
             conf_df=identify_restypes(pdbfilename,conf_df,index,structure)
             conf_df=compute_distance(pdbfilename,index,conf_df,structure)
             conf_df=compute_dihedrals(pdbfilename,index,conf_df,structure)
-            conf_df=chelix_conformation(index,conf_df)
             conf_df=spatial_label(index,conf_df)
             conf_df=dihedral_label(index,conf_df,0.45)
             conf_df=chelix_conformation(index,conf_df)
@@ -74,7 +73,7 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
                 for residue in chain:
                     if residue.id[2]!=' ':
                         print('Please enter a structure file without insertion codes.')
-                        break    #How to exit program here?
+                        sys.exit()
                 conf_df.at[index,'Model_id']=str(model.id)
                 conf_df.at[index,'Chain_id']=chain.id
                 conf_df=assign_default_values(index,conf_df)
@@ -84,6 +83,8 @@ def identify_state(pwd,pdbfilename,align,user_model,user_chain,user_lys,user_glu
                 
                 if conf_df.at[index,'Group']=='None':
                     print(f'Model {model.id}, Chain {chain.id} is probably not a protein kinase.\n')
+                    delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
+
                 
                 else:
                     conf_df=identify_residues(pdbfilename,index,conf_df)
