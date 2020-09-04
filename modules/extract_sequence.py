@@ -14,8 +14,8 @@ warnings.simplefilter('ignore', BiopythonWarning)
 def extract_seq(pdbfilename,index,conf_df):
     model_id=conf_df.at[index,'Model_id']
     chain_id=conf_df.at[index,'Chain_id']
-    fhandle_outputseq=open(f"{pdbfilename[0:-4]}_{model_id}_{chain_id}.fasta",'w')
-    fhandle_outputseq.write(f">{pdbfilename[0:-4]}_{model_id}_{chain_id}\n")
+    fhandle_outputseq=open(f"{pdbfilename[0:-4]}_{chain_id}.fasta",'w')
+    fhandle_outputseq.write(f">{pdbfilename[0:-4]}_{chain_id}\n")
     
     if '.gz' in pdbfilename.lower():
         handle=gzip.open(pdbfilename,'rt')
@@ -24,13 +24,13 @@ def extract_seq(pdbfilename,index,conf_df):
         
     if '.cif' in pdbfilename.lower():
         for record in SeqIO.parse(handle,'cif-atom'):      #Extracts sequence from ATOM records
-            if str(record.annotations['model'])==model_id and record.annotations['chain']==chain_id:
+            if record.annotations['chain']==chain_id:
                 fhandle_outputseq.write(f'{record.seq}')
                 conf_df.at[index,'Sequence']=record.seq
                 conf_df.at[index,'First_res']=record.annotations['start']               #Extract the residue number of first residue as this information is lost in fasta file and HMM output
     if '.pdb' in pdbfilename.lower():
         for record in SeqIO.parse(handle,'pdb-atom'):      #Extracts sequence from ATOM records
-            if str(record.annotations['model'])==model_id and record.annotations['chain']==chain_id:
+            if record.annotations['chain']==chain_id:
                 fhandle_outputseq.write(f'{record.seq}')
                 conf_df.at[index,'Sequence']=record.seq
                 conf_df.at[index,'First_res']=record.annotations['start']               #Extract the residue number of first residue as this information is lost in fasta file and HMM output

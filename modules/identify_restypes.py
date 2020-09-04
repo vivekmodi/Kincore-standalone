@@ -10,15 +10,9 @@ from Bio.SeqUtils import seq1
 
 def identify_restypes(pdbfilename,conf_df,index,structure):
     
-    #if '.cif' in pdbfilename.lower():
-    #    parser=PDB.MMCIFParser(QUIET=True)
-    #if '.pdb' in pdbfilename.lower():
-    #    parser=PDB.PDBParser(QUIET=True)
-            
-    #structure=parser.get_structure(pdbfilename, f'{pdbfilename}')
     for model in structure:
         for chain in model:
-            if str(model.id)==conf_df.at[index,'Model_id'] and chain.id==conf_df.at[index,'Chain_id']:
+            if int(model.id)==int(conf_df.at[index,'Model_id']) and str(chain.id)==str(conf_df.at[index,'Chain_id']):
                 for residue in chain:
                     if int(residue.id[1])==int(conf_df.at[index,'Lys_num']) and residue.id[0]==' ':
                         conf_df.at[index,'Lys_restype']=seq1(residue.resname)

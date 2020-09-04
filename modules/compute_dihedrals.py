@@ -155,16 +155,11 @@ def compute_dihedrals(pdbfilename,index,conf_df,structure):
         
         model_id=conf_df.at[index,'Model_id']
         chain_id=conf_df.at[index,'Chain_id']        
-        #if '.pdb' in pdbfilename.lower():
-        #    parser=PDB.PDBParser(QUIET=True)
-        #if '.cif' in pdbfilename.lower():
-        #    parser=PDB.MMCIFParser(QUIET=True)
-        #structure=parser.get_structure("PDB",(f'{pdbfilename}'))
        
         for model in structure:
             for chain in model:
                 insertion_num=0    #Count residues with insertion codes and skip them
-                if str(model.id)==str(model_id) and chain.id==chain_id:
+                if int(model.id)==int(model_id) and chain.id==chain_id:
                     first=1
                     for residue in chain:
                         if residue.get_id()[0]==' ' and residue.get_id()[2]!=' ':      #Insertion code present

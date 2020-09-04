@@ -19,7 +19,7 @@ def identify_residues(pdbfilename,index,conf_df):
     asp={'AGC':142,'CAMK':142,'CK1':141,'CMGC':150,'NEK':145,'RGC':140,'STE':141,'TKL':142,'TYR':146,'HASP':204,'WNK':149,'BUB':155,'ULK':143}
     phe={'AGC':143,'CAMK':143,'CK1':142,'CMGC':151,'NEK':146,'RGC':141,'STE':142,'TKL':143,'TYR':147,'HASP':205,'WNK':150,'BUB':156,'ULK':144}
 
-    hmm_result=SearchIO.read(f'{pdbfilename[0:-4]}_{model_id}_{chain_id}_{group}.hmmer.txt',format='hmmer3-text')
+    hmm_result=SearchIO.read(f'{pdbfilename[0:-4]}_{chain_id}_{group}.hmmer.txt',format='hmmer3-text')
     for hits in hmm_result:     #extract hit from alignment in HMM output file
         for hsps in hits:
             col_num=0;hmm_index=hsps.query_start;hit_index=hsps.hit_start+first_res-1

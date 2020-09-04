@@ -10,7 +10,7 @@ import numpy as np
 from Bio import PDB
 
 def compute_distance(pdbfilename,index,conf_df,structure):
-    restype_atom_dict={'F':'CZ','L':'CG','P':'CG','M':'CE','S':'OG','V':'CB','W':'CZ3','Y':'OH','A':'CB','G':'CA'}   #Add all the twenty residues here
+    restype_atom_dict={'F':'CZ','R':'CZ','L':'CG','P':'CG','N':'CG','M':'CE','S':'OG','H':'NE2','V':'CB','A':'CB','W':'CZ3','Y':'OH','G':'CA'}
     phe_atom_type=restype_atom_dict[conf_df.at[index,'Phe_restype']]
     
     #Distance Glu4-Phe
@@ -29,18 +29,12 @@ def compute_distance(pdbfilename,index,conf_df,structure):
 
 
 def distance_atoms(pdbfilename,model_id,chain_id,res1,res2,atm1,atm2,structure):
-    
-    #if '.pdb' in pdbfilename.lower():
-    #    parser=PDB.PDBParser(QUIET=True)
-    #if '.cif' in pdbfilename.lower():
-    #    parser=PDB.MMCIFParser(QUIET=True)
-    #structure=parser.get_structure('PDB',f'{pdbfilename}')
     atom_present=0; res1=int(res1); res2=int(res2)
    
     for model in structure:
         for chain in model:
             insertion_num=0    #Count residues with insertion codes and skip them; Not the best way to solve the problem. The fasta file should not have residues with insert code.
-            if str(model.id)==model_id and chain.id==chain_id:
+            if int(model.id)==int(model_id) and chain.id==chain_id:
                 for residue in chain:
                     if residue.get_id()[0]==' ' and residue.get_id()[2]!=' ':      #Insertion code present
                         insertion_num+=1
