@@ -3,6 +3,6 @@
 
 $conda create --name 'kincore-standalone' python=3.8 pandas numpy biopython hmmer --channel conda-forge --channel bioconda
 
-$conda activate kincore-standlone
+$conda activate kincore-standalone
 
 $python3 kinase_state.py -h
