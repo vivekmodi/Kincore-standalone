@@ -20,22 +20,25 @@ from modules.chelix import chelix_conformation
 from modules.spatial_label import spatial_label
 from modules.dihedral_label import dihedral_label
 from modules.delete_files import delete_files
+from modules.extract_ligands import extract_ligands
+from modules.classify_ligands import classify_ligands
 
-def read_inputlist(hmm_loc,pdbfilename,align,user_chain,user_lys,user_glu,user_phe):     #Function to read input file list
+def read_inputlist(hmm_loc,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,header):     #Function to read input file list
     fhandle_files=open(pdbfilename,'r')
     for names in fhandle_files:
         name=names.strip();names=names.split()
-        identify_state(hmm_loc,name,align,user_chain,user_lys,user_glu,user_phe)
+        identify_state(hmm_loc,name,align,user_chain,user_lys,user_glu,user_phe,header)
+        header=1
 
-def print_header_withgroup():       #Print Header when align=False
-    print('Input'.rjust(13)+'Group'.rjust(6)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
+def print_header_withoutgroup(pdbfilename,index,conf_df):       #Print Header when align=False
+    print('Input'.rjust(len(pdbfilename)+1)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
           'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14))
 
-def print_header_withoutgroup():    #Print Header when align=True
-    print('Input'.rjust(13)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
-                              'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14))
+def print_header_withgroup(pdbfilename,index,conf_df):    #Print Header when align=True
+    print('Input'.rjust(len(pdbfilename)+1)+'Group'.rjust(6)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
+    'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14)+'Ligand'.rjust(len(conf_df.at[index,'Ligand'])+1)+'Ligand_label'.rjust(len(conf_df.at[index,'Ligand_label'])+9))
 
-def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe):
+def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,header):
     conf_df=pd.DataFrame()
     chain_list=list()
 
@@ -52,7 +55,6 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe):
     structure=parser.get_structure(pdbfilename, handle)
 
     if align.upper()=='FALSE':
-
         for model in structure:
             index=int(model.id)
             conf_df.at[index,'Model_id']=int(model.id)
@@ -73,12 +75,14 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe):
                         conf_df=spatial_label(index,conf_df)
                         conf_df=dihedral_label(index,conf_df,0.45)
                         conf_df=chelix_conformation(index,conf_df)
-                        print(pdbfilename.rjust(13)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
+                        if header==0:
+                            print_header_withoutgroup(pdbfilename,index,conf_df)
+                            header=1
+                        print(pdbfilename.rjust(len(pdbfilename)+1)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
                               str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
                               conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14))
 
     elif align.upper()=='TRUE':
-
         index=-1
         for model in structure:
             for chain in model:
@@ -100,16 +104,14 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe):
                 conf_df=identify_group(pdbfilename,index,conf_df)
 
                 if conf_df.at[index,'Group']=='None':
-                    print(pdbfilename.rjust(13)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+'       is probably not a protein kinase')
+                    print('#'+pdbfilename.rjust(13)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+'       is probably not a protein kinase.')
                     delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
 
 
                 else:
                     conf_df=identify_residues(pdbfilename,index,conf_df)
                     if conf_df.at[index,'Lys_restype']=='X' or conf_df.at[index,'Glu_restype']=='X' or conf_df.at[index,'Phe_restype']=='X' or conf_df.at[index,'XDFG_restype']=='X' or conf_df.at[index,'Asp_restype']=='X':
-                        print(pdbfilename.rjust(13)+conf_df.at[index,'Group'].rjust(6)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
-                              str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+str('Unassigned').rjust(14)+\
-                              str('Unassigned').rjust(15)+str('Unassigned').rjust(14))
+                        print('#'+pdbfilename.rjust(13)+conf_df.at[index,'Group'].rjust(6)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+'       Conserved residues missing in the structure.')
                         delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
 
                     else:
@@ -119,10 +121,18 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe):
                         conf_df=spatial_label(index,conf_df)
                         conf_df=dihedral_label(index,conf_df,0.45)
                         conf_df=chelix_conformation(index,conf_df)
+                        conf_df=extract_ligands(pdbfilename,index,conf_df,structure)
+                        conf_df=classify_ligands(pdbfilename,index,conf_df,structure)
 
-                        print(pdbfilename.rjust(13)+conf_df.at[index,'Group'].rjust(6)+conf_df.at[index,'Model_id'].rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
-                              str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
-                              conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14))
+                        if header==0:
+                            print_header_withgroup(pdbfilename,index,conf_df)
+                            header=1
+
+
+                        print(pdbfilename.rjust(len(pdbfilename)+1)+conf_df.at[index,'Group'].rjust(6)+conf_df.at[index,'Model_id'].rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
+                        str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
+                        conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14)+conf_df.at[index,'Ligand'].rjust(len(conf_df.at[index,'Ligand'])+1)+conf_df.at[index,'Ligand_label'].rjust(len(conf_df.at[index,'Ligand_label'])+8))
+
                         delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
 
 
@@ -132,8 +142,9 @@ if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('PDB',help='PDB file in .cif or .pdb format. You can also provide compressed file as file.cif.gz or file.pdb.gz or list of filenames in a .txt file.')
     parser.add_argument('Align',help='True/False; If "True" (Slower) then the program will align the input protein sequence to pre-computed HMMs and identify conserved \
-                        residues (Example $python kinase_state.py 1GAG.pdb True).\
-                        If "False" (Faster) then the please provide the optional arguments (Example $python kinase_state.py -L 1030 -G 1047 -P 1151 -C A,B,C 1GAG.pdb False)')
+                        residues to determine kinase conformational labels and ligand type (Example $python kinase_state.py 1GAG.pdb True).\
+                        If "False" (Faster) then please provide the optional arguments (Example $python kinase_state.py -L 1030 -G 1047 -P 1151 -C A,B,C 1GAG.pdb False). Please note that \
+                        the program can provide ligand information only when this argument is True.')
 
     parser.add_argument('-L','--Lys',help='Residue number of the conserved B3-Lys in the input PDB file')
     parser.add_argument('-G','--Glu',help='Residue number of the conserved C-helix-Glu in the input PDB file')
@@ -142,14 +153,18 @@ if __name__ == '__main__':
     args=parser.parse_args()
 
     pdbfilename=args.PDB
-    if args.Align.upper()=='FALSE':
-        user_chain=str(args.Chain);user_lys=int(args.Lys);user_glu=int(args.Glu);user_phe=int(args.Phe)
-        print_header_withoutgroup()
     if args.Align.upper()=='TRUE':
         user_chain=user_lys=user_glu=user_phe=align=''
-        print_header_withgroup()
-
-    if '.txt' in pdbfilename:
-        read_inputlist(hmm_loc,pdbfilename,args.Align,user_chain,user_lys,user_glu,user_phe)
     else:
-        identify_state(hmm_loc,pdbfilename,args.Align,user_chain,user_lys,user_glu,user_phe)
+        if not args.Lys or not args.Glu or not args.Phe or not args.Chain:
+            print('Please provide residue numbers and chain id.')
+            exit()
+        else:
+            user_chain=str(args.Chain);user_lys=int(args.Lys);user_glu=int(args.Glu);user_phe=int(args.Phe)
+
+
+    header=0
+    if '.txt' in pdbfilename:
+        read_inputlist(hmm_loc,pdbfilename,args.Align,user_chain,user_lys,user_glu,user_phe,header)
+    else:
+        identify_state(hmm_loc,pdbfilename,args.Align,user_chain,user_lys,user_glu,user_phe,header)
