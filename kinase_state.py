@@ -31,12 +31,13 @@ def read_inputlist(hmm_loc,pdbfilename,align,user_chain,user_lys,user_glu,user_p
         header=1
 
 def print_header_withoutgroup(pdbfilename,index,conf_df):       #Print Header when align=False
-    print('Input'.rjust(len(pdbfilename)+1)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
-          'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14))
+    print('Input'.rjust(len(pdbfilename)+1)+'Model'.rjust(6)+'Chain'.rjust(6)+'Spatial_label'.rjust(14)+\
+          'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14)+'X-DFG Φ Ψ'.center(22)+'DFG-Asp Φ Ψ'.center(22)+'DFG-Phe Φ Ψ χ1'.center(30))
 
 def print_header_withgroup(pdbfilename,index,conf_df):    #Print Header when align=True
-    print('Input'.rjust(len(pdbfilename)+1)+'Group'.rjust(6)+'Model'.rjust(6)+'Chain'.rjust(6)+'B3-Lys'.rjust(7)+'C-helix-Glu'.rjust(12)+'DFG-Phe'.rjust(8)+'Spatial_label'.rjust(14)+\
-    'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14)+'Ligand'.rjust(len(conf_df.at[index,'Ligand'])+1)+'Ligand_label'.rjust(len(conf_df.at[index,'Ligand_label'])+9))
+    print('Input'.rjust(len(pdbfilename)+1)+'Group'.rjust(6)+'Model'.rjust(6)+'Chain'.rjust(6)+'Spatial_label'.rjust(14)+\
+    'Dihedral_label'.rjust(15)+'C-helix_label'.rjust(14)+'Ligand'.rjust(len(conf_df.at[index,'Ligand'])+1)+'Ligand_label'.rjust(len(conf_df.at[index,'Ligand_label'])+9)+\
+    'X-DFG Φ Ψ'.center(22)+'DFG-Asp Φ Ψ'.center(22)+'DFG-Phe Φ Ψ χ1'.center(30))
 
 def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,header):
     conf_df=pd.DataFrame()
@@ -78,9 +79,14 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,h
                         if header==0:
                             print_header_withoutgroup(pdbfilename,index,conf_df)
                             header=1
+                        xdfg_string=str(str(int(conf_df.at[index,'XDFG_num']))+conf_df.at[index,'XDFG_restype'])
+                        asp_string=str(str(int(conf_df.at[index,'Asp_num']))+conf_df.at[index,'Asp_restype'])
+                        phe_string=str(str(int(conf_df.at[index,'Phe_num']))+conf_df.at[index,'Phe_restype'])
                         print(pdbfilename.rjust(len(pdbfilename)+1)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
-                              str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
-                              conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14))
+                              conf_df.at[index,'Spatial_label'].rjust(14)+conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14)+\
+                              xdfg_string.rjust(6)+str('%.2f' %conf_df.at[index,'XDFG_Phi']).rjust(8)+str('%.2f' %conf_df.at[index,'XDFG_Psi']).rjust(8)+\
+                              asp_string.rjust(6)+str('%.2f' %conf_df.at[index,'Asp_Phi']).rjust(8)+str('%.2f' %conf_df.at[index,'Asp_Psi']).rjust(8)+phe_string.rjust(6)+str('%.2f' %conf_df.at[index,'Phe_Phi']).rjust(8)+\
+                              str('%.2f' %conf_df.at[index,'Phe_Psi']).rjust(8)+str('%.2f' %conf_df.at[index,'Phe_Chi1']).rjust(8))
 
     elif align.upper()=='TRUE':
         index=-1
@@ -128,10 +134,14 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,h
                             print_header_withgroup(pdbfilename,index,conf_df)
                             header=1
 
-
+                        xdfg_string=str(str(int(conf_df.at[index,'XDFG_num']))+conf_df.at[index,'XDFG_restype'])
+                        asp_string=str(str(int(conf_df.at[index,'Asp_num']))+conf_df.at[index,'Asp_restype'])
+                        phe_string=str(str(int(conf_df.at[index,'Phe_num']))+conf_df.at[index,'Phe_restype'])
                         print(pdbfilename.rjust(len(pdbfilename)+1)+conf_df.at[index,'Group'].rjust(6)+conf_df.at[index,'Model_id'].rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+\
-                        str(int(conf_df.at[index,'Lys_num'])).rjust(7)+str(int(conf_df.at[index,'Glu_num'])).rjust(12)+str(int(conf_df.at[index,'Phe_num'])).rjust(8)+conf_df.at[index,'Spatial_label'].rjust(14)+\
-                        conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14)+conf_df.at[index,'Ligand'].rjust(len(conf_df.at[index,'Ligand'])+1)+conf_df.at[index,'Ligand_label'].rjust(len(conf_df.at[index,'Ligand_label'])+8))
+                        conf_df.at[index,'Spatial_label'].rjust(14)+conf_df.at[index,'Dihedral_label'].rjust(15)+conf_df.at[index,'Chelix'].rjust(14)+conf_df.at[index,'Ligand'].rjust(len(conf_df.at[index,'Ligand'])+1)+\
+                        conf_df.at[index,'Ligand_label'].rjust(len(conf_df.at[index,'Ligand_label'])+9)+xdfg_string.rjust(6)+str('%.2f' %conf_df.at[index,'XDFG_Phi']).rjust(8)+str('%.2f' %conf_df.at[index,'XDFG_Psi']).rjust(8)+\
+                        asp_string.rjust(6)+str('%.2f' %conf_df.at[index,'Asp_Phi']).rjust(8)+str('%.2f' %conf_df.at[index,'Asp_Psi']).rjust(8)+phe_string.rjust(6)+str('%.2f' %conf_df.at[index,'Phe_Phi']).rjust(8)+\
+                        str('%.2f' %conf_df.at[index,'Phe_Psi']).rjust(8)+str('%.2f' %conf_df.at[index,'Phe_Chi1']).rjust(8))
 
                         delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
 

@@ -149,13 +149,13 @@ def compute_chi4(structure_,model_,chain_,curr_residue_):
     return chi4
 
 def compute_dihedrals(pdbfilename,index,conf_df,structure):
-        
-        ignoremodified=('PTR','TPO','SEP','MSE','BWB','CAS','CME','CSO','CSS','CSX','MK8','MLY','NEP','NMM','PHD','CAF','CSD','CYO','OCS','OCY','SCS',\
-                        'ALY','KCX',',LGY','CXM','MHO','T8L','ACE','AME','CY0','UNK','T8L','MHO','COM')
-        
+
+        ignoremodified=('ACE','ALY','AME','BWB','CAF','CAS','CME','COM','CSD','CSO','CSS','CSX','CXM','CY0','CYO','KCX','LGY','MHO','MK8','MLY','MSE','NEP','NMM',\
+                     'OCS','OCY','PHD','PTR','SCS','SEP','T8L','TPO','UNK')
+
         model_id=conf_df.at[index,'Model_id']
-        chain_id=conf_df.at[index,'Chain_id']        
-       
+        chain_id=conf_df.at[index,'Chain_id']
+
         for model in structure:
             for chain in model:
                 insertion_num=0    #Count residues with insertion codes and skip them
@@ -164,26 +164,26 @@ def compute_dihedrals(pdbfilename,index,conf_df,structure):
                     for residue in chain:
                         if residue.get_id()[0]==' ' and residue.get_id()[2]!=' ':      #Insertion code present
                             insertion_num+=1
-                        
+
                         if residue.id[0]!=' ' or residue.id[0][2:] in ignoremodified:
                             continue
-        
+
                         if first==1:        #The 'first' blocks are required to assign first and second residue to variables
                             prev_residue=residue
                             first=2
                             continue
-        
+
                         if first==2:        #This block computes psi dihedral for first residue
                             curr_residue=residue
                             psi=compute_psi(structure,model,chain,prev_residue,curr_residue)
                             chi1=compute_chi1(structure,model,chain,prev_residue)
                             chi2=compute_chi2(structure,model,chain,prev_residue)
-                            chi3=compute_chi3(structure,model,chain,prev_residue)       
-                            chi4=compute_chi4(structure,model,chain,prev_residue)       
-        
+                            chi3=compute_chi3(structure,model,chain,prev_residue)
+                            chi4=compute_chi4(structure,model,chain,prev_residue)
+
                             first=3
                             continue
-        
+
                         if first==3:        #This block computes phi and psi dihedrals from second residue onward. At anytime in the block we have three residue variables assigned.
                             next_residue=residue
                             phi=compute_phi(structure,model,chain,prev_residue,curr_residue)
@@ -191,10 +191,10 @@ def compute_dihedrals(pdbfilename,index,conf_df,structure):
                             omega=compute_omega(structure,model,chain,prev_residue,curr_residue)
                             chi1=compute_chi1(structure,model,chain,curr_residue)
                             chi2=compute_chi2(structure,model,chain,curr_residue)
-                            chi3=compute_chi3(structure,model,chain,curr_residue)      
-                            chi4=compute_chi4(structure,model,chain,curr_residue)       
-        
-        
+                            chi3=compute_chi3(structure,model,chain,curr_residue)
+                            chi4=compute_chi4(structure,model,chain,curr_residue)
+
+
                             if curr_residue.id[1]==int(conf_df.at[index,'XDFG_num']-insertion_num):
                                 conf_df.at[index,'XDFG_Phi']=phi;conf_df.at[index,'XDFG_Psi']=psi
                             if curr_residue.id[1]==int(conf_df.at[index,'Asp_num']-insertion_num):
@@ -202,18 +202,17 @@ def compute_dihedrals(pdbfilename,index,conf_df,structure):
                             if curr_residue.id[1]==int(conf_df.at[index,'Phe_num']-insertion_num):
                                 conf_df.at[index,'Phe_Phi']=phi;conf_df.at[index,'Phe_Psi']=psi;conf_df.at[index,'Phe_Chi1']=chi1
                                 if conf_df.at[index,'Phe_Chi1']<0:
-                                    conf_df.at[index,'Phe_Chi1']=np.round((conf_df.at[index,'Phe_Chi1']+360),2)
+                                    conf_df.at[index,'Phe_Chi1']=conf_df.at[index,'Phe_Chi1']+360
                                     break      #Break loop after XDF have been identified
-        
+
                             prev_residue=curr_residue
                             curr_residue=next_residue       #update residue variables
-    
+
                     if first==3:        #This block computes phi dihedral for the last residue
                         phi=compute_phi(structure,model,chain,prev_residue,curr_residue)
                         omega=compute_omega(structure,model,chain,prev_residue,curr_residue)
                         chi1=compute_chi1(structure,model,chain,curr_residue)
                         chi2=compute_chi2(structure,model,chain,curr_residue)
-                        chi3=compute_chi3(structure,model,chain,curr_residue)      
-                        chi4=compute_chi4(structure,model,chain,curr_residue)       
+                        chi3=compute_chi3(structure,model,chain,curr_residue)
+                        chi4=compute_chi4(structure,model,chain,curr_residue)
         return conf_df
-    
