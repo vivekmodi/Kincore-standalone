@@ -16,13 +16,13 @@ omitligands=('1PE','1PE','2HT','2PE','5LS','5LS','5TH','5TK','5TM','7PE','ACE','
                  'HG','HSJ','IMD','IOD','IPA','IPH','K','KCX','LGY','MES','MG','MG8','MGF','MK8','MLA','MLI','MLY','MN','MOH','MPD','MRD','MSE','MXE','MYR','NA',\
                  'NEP','NH4','NI','NO3','OCS','OCT','OCY','P4G','P6G','PDX','PEG','PG0','PG4','PGE','PGF','PGO','PHU','PO4','PPI','PSE','PTR','PUP','PZO','S26',\
                  'SBT','SCN','SCS','SEP','SEP','SGM','SIN','SO3','SO4','SR','SRT','SVQ','T8L','TAM','TAR','TCE','TFA','TLA','TLA','TMA','TPO','TRS','UNX','VO4',\
-                 'YT3','Z4K','ZN')
+                 'YT3','Z4K','ZN','P4C')
 modified_aa=('ACE','ALY','AME','BWB','CAF','CAS','CME','COM','CSD','CSO','CSS','CSX','CXM','CY0','CYO','KCX','LGY','MHO','MK8','MLY','MSE','NEP','NMM',\
                  'OCS','OCY','PHD','PTR','SCS','SEP','T8L','TPO','UNK')
-    
+
 def compute_distance_from_rre4(structure,model_id,chain_id,ligandname,ligandid,rre4num):
     min_rre4=999
-    
+
     for model in structure:
         for chain in model:
             if int(model.id)==int(model_id) and chain.id==chain_id:
@@ -30,7 +30,7 @@ def compute_distance_from_rre4(structure,model_id,chain_id,ligandname,ligandid,r
                     if residue1.id[0]==('H_'+ligandname) and residue1.id[1]==int(ligandid):
                         for atom1 in residue1:
                             if atom1.element!='H':
-    
+
                                 for residue2 in chain:
                                     if residue2.get_id()[1]==rre4num:    #Only rre4num
                                         if residue2.get_id()[0]==' ' or ((residue2.id[0][2:]+'\n') in modified_aa):  #Only protein atoms or modified residues
@@ -50,7 +50,7 @@ def compute_distance_from_hinge(structure,model_id,chain_id,ligandname,ligandid,
                     if residue1.id[0]==('H_'+ligandname) and residue1.id[1]==int(ligandid):
                         for atom1 in residue1:
                             if atom1.element!='H':
-    
+
                                 for residue2 in chain:
                                     if residue2.get_id()[1]>=hinge1 and residue2.get_id()[1]<=hinge1+2:        #compute distance from hinge
                                         if residue2.get_id()[0]==' ' or ((residue2.id[0][2:]+'\n') in modified_aa):
@@ -78,39 +78,39 @@ def compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname
                                 for residue2 in chain:
                                     if residue2.get_id()[0]==' ' or ((residue2.id[0][2:]+'\n') in modified_aa):    #Only protein atoms
                                         res_id=residue2.get_id()[1]
-                                        
+
                                         if res_id in back_pocket1_num or res_id in back_pocket2_num  or res_id in back_pocket3_num or int(res_id)==int(xdfg_num) or int(res_id)==int(xdfg_num+1) or int(res_id)==int(xdfg_num+2) or res_id in type2_resi:
-                                           
+
                                             for atom2 in residue2:
                                                 if atom2.element!='H':
                                                     distance[res_id]=round(float((residue1[atom1.fullname.strip()]-residue2[atom2.fullname.strip()])),2)
-                                                    
+
                                                     #Contact with Type2 pocket present
-                                                    if res_id in type2_resi and distance[res_id]<=4.5:  
+                                                    if res_id in type2_resi and distance[res_id]<=4.5:
                                                             dfgoutcontact+=1
-                                                    
+
                                                     #Contact with X-D mainchain
-                                                    if distance[res_id]<=4 and (int(res_id)==int(xdfg_num) or int(res_id)==int(xdfg_num+1)) and (atom2.fullname.strip()=='O' or atom2.fullname.strip()=='N') and dfgcontact==0 and res_id not in contact_list: 
+                                                    if distance[res_id]<=4 and (int(res_id)==int(xdfg_num) or int(res_id)==int(xdfg_num+1)) and (atom2.fullname.strip()=='O' or atom2.fullname.strip()=='N') and dfgcontact==0 and res_id not in contact_list:
                                                         dfgcontact=1
                                                         backpocket_count[ligandname+':'+ligandid]+=1
                                                         contact_list.append(res_id)
-                                                    
+
                                                     #Contact with Phe sidechain
                                                     elif distance[res_id]<=4 and int(res_id)==int(xdfg_num+2) and res_id not in contact_list and (atom2.fullname.strip()!='O' and atom2.fullname.strip()!='N' and atom2.fullname.strip()!='CA'):
                                                         backpocket_count[ligandname+':'+ligandid]+=1
                                                         contact_list.append(res_id)
-                                                        
+
                                                     #Contact with non-XDF backpocket residues
                                                     elif distance[res_id]<=4 and int(res_id)!=int(xdfg_num) and int(res_id)!=int(xdfg_num+1) and int(res_id)!=int(xdfg_num+2) and res_id not in contact_list:
                                                         backpocket_count[ligandname+':'+ligandid]+=1
                                                         contact_list.append(res_id)
-                                                        
+
                                                         #Contact with N-ter of C-helix (Frontpocket)
                                                         if res_id in front_pocket_num and res_id not in contact_list_front:
                                                             frontpocket_count[ligandname+':'+ligandid]+=1
                                                             contact_list_front.append(res_id)
-                                                   
-                                                        
+
+
     return frontpocket_count, backpocket_count, dfgoutcontact, distance
 
 def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same PDB have Type1 and Type1.5 labels then keep only Type1.5 for both the chains
@@ -120,15 +120,15 @@ def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same P
         chain1=df.at[i,'Chain_id']
         ligand_label1=df.at[i,'Ligand_label']
         ligand_name1=df.at[i,'Ligand']
-        
-        
+
+
         for j in df.index:
             group2=df.at[j,'Group']
             model2=df.at[j,'Model_id']
             chain2=df.at[j,'Chain_id']
             ligand_label2=df.at[j,'Ligand_label']
             ligand_name2=df.at[j,'Ligand']
-            
+
             if group1==group2 and model1==model2 and chain1!=chain2:    #This will condition will still be true if the two chains are from different proteins, which will be wrong!
                 if ',' in ligand_name1:
                     for position1,ligand_n1 in enumerate(ligand_name1.split(',')):
@@ -141,8 +141,8 @@ def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same P
                         if 'TypeI'==ligand_label1 and 'TypeI½' in ligand_label2:
                             df.at[i,'Ligand_label']=ligand_label2
     return df
-                    
-                    
+
+
 def classify_ligands(pdbfilename,index,df,structure):
         model_id=str(df.at[index,'Model_id'])
         chain_id=str(df.at[index,'Chain_id'])
@@ -162,7 +162,7 @@ def classify_ligands(pdbfilename,index,df,structure):
         df.at[index,'Ligand_label']='None'    #make default label None
         if 'No_ligand' in df.at[index,'Ligand']:
             return df
-       
+
         ligandlist=df.at[index,'Ligand'].split(',')
         for items in ligandlist:
             ligandname=items.split(':')[0]
@@ -174,7 +174,7 @@ def classify_ligands(pdbfilename,index,df,structure):
 
             #Contacts with pocket residues
             (frontpocket_count, backpocket_count, dfgoutcontact,distance)=compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname,ligandid,type2_resi,back_pocket1_num,back_pocket2_num,back_pocket3_num,front_pocket_num,xdfg_resi)
-           
+
 
             if min_rre4!=999 or min_hinge!=999:
                 if min_rre4>=6.5 and min_hinge>=6.5:
@@ -191,8 +191,8 @@ def classify_ligands(pdbfilename,index,df,structure):
                     ligand_label.append('TypeI')
 
         df.at[index,'Ligand_label']=','.join(ligand_label)
-        
-    
+
+
         df=correct_chain_diff_in_ligand_type_labels(df)
         return df
 
@@ -201,4 +201,3 @@ def classify_ligands(pdbfilename,index,df,structure):
     #filename=sys.argv[1]
     #df=pd.read_csv(filename,sep='\t',header='infer')
 #    classify_ligands_webserver(pwd,pdbfilename,index,conf_df,structure)
-    
