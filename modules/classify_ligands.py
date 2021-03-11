@@ -121,8 +121,8 @@ def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same P
         chain1=df.at[i,'Chain_id']
         ligand_label1=df.at[i,'Ligand_label']
         ligand_name1=df.at[i,'Ligand']
-        if pd.isna(df.at[i,'Ligand']):
-            continue
+        #if pd.isna(df.at[i,'Ligand']):
+        #    continue
 
         for j in df.index:
             group2=df.at[j,'Group']
@@ -130,8 +130,8 @@ def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same P
             chain2=df.at[j,'Chain_id']
             ligand_label2=df.at[j,'Ligand_label']
             ligand_name2=df.at[j,'Ligand']
-            if pd.isna(df.at[j,'Ligand']):
-                continue
+            #if pd.isna(df.at[j,'Ligand']):
+            #    continue
 
             if group1==group2 and model1==model2 and chain1!=chain2:    #This will condition will still be true if the two chains are from different proteins, which will be wrong!
                 #print(chain1,chain2,ligand_name1)

@@ -35,6 +35,7 @@ def assign_default_values(index,conf_df):
     conf_df.at[index,'Chelix']='Unassigned'
     conf_df.at[index,'Spatial_label']='Unassigned'
     conf_df.at[index,'Dihedral_label']='Unassigned'
-    
+    conf_df.at[index,'Ligand']='None'
+    conf_df.at[index,'Ligand_label']='None'
+
     return conf_df
-    
