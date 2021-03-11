@@ -61,7 +61,7 @@ def compute_distance_from_hinge(structure,model_id,chain_id,ligandname,ligandid,
                                                         min_hinge=distance
     return min_hinge
 
-def compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname,ligandid,type2_resi,back_pocket1_num,back_pocket2_num,back_pocket3_num,front_pocket_num,xdfg_num):
+def compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname,ligandid,type2_resi,back_pocket1_num,back_pocket2_num,back_pocket3_num,front_pocket_num,xdfg_num,spatial):
     dfgcontact=0;dfgoutcontact=0;distance=dict()
     contact_list=list();contact_list_front=list()
     backpocket_count=dict();frontpocket_count=dict()
@@ -96,12 +96,12 @@ def compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname
                                                         contact_list.append(res_id)
 
                                                     #Contact with Phe sidechain
-                                                    elif distance[res_id]<=4 and int(res_id)==int(xdfg_num+2) and res_id not in contact_list and (atom2.fullname.strip()!='O' and atom2.fullname.strip()!='N' and atom2.fullname.strip()!='CA'):
+                                                elif distance[res_id]<=4 and int(res_id)==int(xdfg_num+2) and res_id not in contact_list and (atom2.fullname.strip()!='O' and atom2.fullname.strip()!='N' and atom2.fullname.strip()!='CA') and (spatial!='DFGout' or spatial!='DFGinter'):
                                                         backpocket_count[ligandname+':'+ligandid]+=1
                                                         contact_list.append(res_id)
 
                                                     #Contact with non-XDF backpocket residues
-                                                    elif distance[res_id]<=4 and int(res_id)!=int(xdfg_num) and int(res_id)!=int(xdfg_num+1) and int(res_id)!=int(xdfg_num+2) and res_id not in contact_list:
+                                                elif distance[res_id]<=4 and int(res_id)!=int(xdfg_num) and int(res_id)!=int(xdfg_num+1) and int(res_id)!=int(xdfg_num+2) and res_id not in contact_list:
                                                         backpocket_count[ligandname+':'+ligandid]+=1
                                                         contact_list.append(res_id)
 
@@ -178,7 +178,7 @@ def classify_ligands(pdbfilename,index,df,structure):
             min_hinge=compute_distance_from_hinge(structure,model_id,chain_id,ligandname,ligandid,hinge1)
 
             #Contacts with pocket residues
-            (frontpocket_count, backpocket_count, dfgoutcontact,distance)=compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname,ligandid,type2_resi,back_pocket1_num,back_pocket2_num,back_pocket3_num,front_pocket_num,xdfg_resi)
+            (frontpocket_count, backpocket_count, dfgoutcontact,distance)=compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname,ligandid,type2_resi,back_pocket1_num,back_pocket2_num,back_pocket3_num,front_pocket_num,xdfg_resi,spatial)
 
 
             if min_rre4!=999 or min_hinge!=999:
