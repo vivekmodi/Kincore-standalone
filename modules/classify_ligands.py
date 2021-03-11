@@ -114,13 +114,15 @@ def compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname
     return frontpocket_count, backpocket_count, dfgoutcontact, distance
 
 def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same PDB have Type1 and Type1.5 labels then keep only Type1.5 for both the chains
+    #print(df)
     for i in df.index:
         group1=df.at[i,'Group']
         model1=df.at[i,'Model_id']
         chain1=df.at[i,'Chain_id']
         ligand_label1=df.at[i,'Ligand_label']
         ligand_name1=df.at[i,'Ligand']
-
+        if pd.isna(df.at[i,'Ligand']):
+            continue
 
         for j in df.index:
             group2=df.at[j,'Group']
@@ -128,8 +130,11 @@ def correct_chain_diff_in_ligand_type_labels(df):   #If two chains in the same P
             chain2=df.at[j,'Chain_id']
             ligand_label2=df.at[j,'Ligand_label']
             ligand_name2=df.at[j,'Ligand']
+            if pd.isna(df.at[j,'Ligand']):
+                continue
 
             if group1==group2 and model1==model2 and chain1!=chain2:    #This will condition will still be true if the two chains are from different proteins, which will be wrong!
+                #print(chain1,chain2,ligand_name1)
                 if ',' in ligand_name1:
                     for position1,ligand_n1 in enumerate(ligand_name1.split(',')):
                         for position2,ligand_n2 in enumerate(ligand_name2.split(',')):

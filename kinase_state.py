@@ -110,14 +110,13 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,h
                 conf_df=identify_group(pdbfilename,index,conf_df)
 
                 if conf_df.at[index,'Group']=='None':
-                    print('#'+pdbfilename.rjust(13)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+'       is probably not a protein kinase.')
                     delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
 
 
                 else:
                     conf_df=identify_residues(pdbfilename,index,conf_df)
                     if conf_df.at[index,'Lys_restype']=='X' or conf_df.at[index,'Glu_restype']=='X' or conf_df.at[index,'Phe_restype']=='X' or conf_df.at[index,'XDFG_restype']=='X' or conf_df.at[index,'Asp_restype']=='X':
-                        print('#'+pdbfilename.rjust(13)+conf_df.at[index,'Group'].rjust(6)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+'       Conserved residues missing in the structure.')
+                        #print('#'+pdbfilename.rjust(13)+conf_df.at[index,'Group'].rjust(6)+str(int(conf_df.at[index,'Model_id'])).rjust(6)+conf_df.at[index,'Chain_id'].rjust(6)+'       Conserved residues missing in the structure.')
                         delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
 
                     else:
@@ -144,6 +143,13 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,h
                         str('%.2f' %conf_df.at[index,'Phe_Psi']).rjust(8)+str('%.2f' %conf_df.at[index,'Phe_Chi1']).rjust(8))
 
                         delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
+
+        for i in conf_df.index:
+            if conf_df.at[i,'Group']=='None':
+                print(f'# {pdbfilename} Model {conf_df.at[i,"Model_id"]} Chain {conf_df.at[i,"Chain_id"]} is probably not a protein kinase.')
+            if conf_df.at[i,'Group']!='None' and (conf_df.at[i,'Lys_restype']=='X' or conf_df.at[i,'Glu_restype']=='X' or conf_df.at[i,'Phe_restype']=='X' or conf_df.at[i,'XDFG_restype']=='X' or conf_df.at[i,'Asp_restype']=='X'):
+                print(f'# {pdbfilename} Model {conf_df.at[i,"Model_id"]} Chain {conf_df.at[i,"Chain_id"]} is missing the required residues.')
+
 
 
 
