@@ -83,7 +83,7 @@ def compute_distance_from_pocket_residues(structure,model_id,chain_id,ligandname
 
                                             for atom2 in residue2:
                                                 if atom2.element!='H':
-                                                    distance[res_id]=round(float((residue1[atom1.fullname.strip()]-residue2[atom2.fullname.strip()])),2)
+                                                    distance[res_id]=round(float((residue1[atom1.fullname.strip()]-residue2[atom2.fullname.strip()])),1)
 
                                                     #Contact with Type2 pocket present
                                                     if res_id in type2_resi and distance[res_id]<=4.5:
