@@ -142,7 +142,7 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,h
                         asp_string.rjust(6)+str('%.2f' %conf_df.at[index,'Asp_Phi']).rjust(8)+str('%.2f' %conf_df.at[index,'Asp_Psi']).rjust(8)+phe_string.rjust(6)+str('%.2f' %conf_df.at[index,'Phe_Phi']).rjust(8)+\
                         str('%.2f' %conf_df.at[index,'Phe_Psi']).rjust(8)+str('%.2f' %conf_df.at[index,'Phe_Chi1']).rjust(8))
 
-                        delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'])
+                        delete_files(pdbfilename,conf_df.at[index,'Model_id'],conf_df.at[index,'Chain_id'],conf_df.at[index,'Group'])
 
         for i in conf_df.index:
             if conf_df.at[i,'Group']=='None':
