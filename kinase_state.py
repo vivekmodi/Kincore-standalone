@@ -43,7 +43,7 @@ def identify_state(pwd,pdbfilename,align,user_chain,user_lys,user_glu,user_phe,h
     conf_df=pd.DataFrame()
     chain_list=list()
 
-    if '.gz' in pdbfilename.lower():
+    if '.gz' in pdbfilename.lower():      #Check if the file is compressed
         handle=gzip.open(pdbfilename,'rt')
     else:
         handle=open(pdbfilename,'r')
